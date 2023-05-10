@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API
+  description: API for user registration, login and logout
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The user's username
+                password:
+                  type: string
+                  description: The user's password
+              required:
+                - username
+                - password
+      responses:
+        "201":
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    description: The ID of the newly registered user
+                  username:
+                    type: string
+                    description: The username of the newly registered user
+        "500":
+          description: Username already exists
+
+  /login:
+    post:
+      summary: Login and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The user's username
+                password:
+                  type: string
+                  description: The user's password
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for the authenticated user
+        "400":
+          description: Username and password are required
+        "401":
+          description: Incorrect username or password
+        "500":
+          description: Internal server error
+
+  /logout:
+    post:
+      summary: Logout and delete JWT token from database
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User successfully logged out
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /allusers:
+    get:
+      summary: Get all users
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: All users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: string
+                      description: The ID of the user
+                    username:
+                      type: string
+                      description: The username of the user
+        "500":
+          description: Internal server error
+
+  /update/{user_id}:
+    put:
+      summary: Update User Password
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The user's username
+                password:
+                  type: string
+                  description: The user's new password
+              required:
+                - username
+                - password
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user to update
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: User password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    description: The ID of the user
+                  username:
+                    type: string
+                    description: The username of the user
+        "401":
+          description: Incorrect username or password
+        "500":
+          description: Internal server error
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
