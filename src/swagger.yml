@@ -161,7 +161,20 @@ paths:
           description: Incorrect username or password
         "500":
           description: Internal server error
-
+  /delete/{user_id}:
+    delete:
+      summary: Delete User Account
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user to delete
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: User Account deleted successfully
 components:
   securitySchemes:
     BearerAuth:

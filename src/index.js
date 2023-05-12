@@ -12,7 +12,7 @@ app.use("/api-docks", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(express.json());
 
 app.use(require("./Routes/User"));
-
+// app.use(require('./Routes/file_upload'))
 
 app.listen(8080, () => {
     console.log(`running on http://localhost:8080`);
