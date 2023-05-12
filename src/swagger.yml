@@ -175,6 +175,16 @@ paths:
       responses:
         "200":
           description: User Account deleted successfully
+  /upload:
+    post:
+      summary: Uploads a file.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: upfile
+          type: file
+          description: The file to upload.
 components:
   securitySchemes:
     BearerAuth:

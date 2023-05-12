@@ -7,7 +7,7 @@ require("dotenv").config();
 const AWS = require("aws-sdk");
 router.use(fileUpload());
 
-router.post("/upload", async (req, res) => {
+router.post("/upload/:user_id", async (req, res) => {
   AWS.config.update({
     accessKeyId: process.env.ACCESSKEYID,
     secretAccessKey: process.env.SECRETACCESSKEY,
@@ -15,20 +15,23 @@ router.post("/upload", async (req, res) => {
   });
 
   const s3 = new AWS.S3();
-
-  const fileContent = Buffer.from(req.file.data, "binary");
+  const user_id = req.params.user_id
+  const fileContent = Buffer.from(req.files.data.data, "binary");
 
   const params = {
     Bucket: "bharatgo-app-t1",
-    Key: req.file.name,
+    Key: req.files.data.name,
     Body: fileContent,
   };
 
   s3.upload(params, (err, data) => {
     if (err) {
-      throw err;
+      res.sendStatus(403)
+      throw err
     }
-    res.status(201).send(data.Location);
+    const url = data.Location
+    pool.query("update users set profile_image= $1 where user_id = $2",[url,user_id])
+    res.status(201).send(url);
   });
 });
 
